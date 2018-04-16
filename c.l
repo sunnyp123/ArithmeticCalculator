@@ -1,102 +1,54 @@
 %{
- 
- 
-#undef yywrap
-#define yywrap() 1 
-int f1=0,f2=0;
-char oper;
-float op1=0,op2=0,ans=0;
-void eval();
- 
+int op=0,i;
+float a,b;
 %}
- 
- 
-DIGIT [0-9]
-NUM {DIGIT}+(\.{DIGIT}+)?
-OP [*/+-]
- 
-%%
- 
- 
-{NUM} {
- if(f1==0)
- {
- op1=atof(yytext);
- f1=1;
- }
- 
- else if(f2==-1)
- {
- op2=atof(yytext);
- f2=1;
- }
- 
- if((f1==1) && (f2==1))
- {
- eval();
- f1=0;
- f2=0;
- 
- }
-}
- 
-{OP} {
- 
- oper=(char) *yytext;
- f2=-1;
-}
- 
-[\n] {
- 
- if(f1==1 && f2==1)
- { 
- eval;
- f1=0;
- f2=0;
- }
-} 
- 
-%%
- 
- 
- 
-main()
-{
- yylex();
-}
- 
- 
-void eval()
-{
 
- switch(oper)
- {
- case '+':
- ans=op1+op2;
- break;
- 
- case '-':
- ans=op1-op2;
- break;
- 
- case '*':
- ans=op1*op2;
- break;
- 
- case '/':
- if(op2==0)
- {
- printf("ERROR");
- return;
- }
- else
- {
- ans=op1/op2;
- }
- break;
- default:
- printf("operation not available");
- break;
- }
- printf("The answer is = %lf",ans);
+dig [0-9]+|([0-9]*)"."([0-9]+)
+add "+"
+sub "-"
+mul "*"
+div "/"
+pow "^"
+ln \n
+%%
+{dig} {digi();} /*** digi() is a user defined function ***/
+{add} {op=1;}
+{sub} {op=2;}
+{mul} {op=3;}
+{div} {op=4;}
+{pow} {op=5;}
+{ln} {printf("\n the result :%f\n\n",a);}
+
+%%
+digi()
+{
+if(op==0)
+a=atof(yytext); /*** atof() is used to convert the ASCII input to float***/
+else
+{
+b=atof(yytext);
+switch(op)
+{
+case 1:a=a+b;
+break;
+case 2:a=a-b;
+break;
+case 3:a=a*b;
+break;
+case 4:a=a/b;
+break;
+case 5:for(i=a;b>1;b--)
+a=a*i;
+break;
+}
+op=0;
+}
+}
+main(int argv,char *argc[])
+{
+yylex();
+}
+yywrap()
+{
+return 1;
 }
